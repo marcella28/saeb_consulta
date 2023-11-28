@@ -5,9 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script type="text/javascript" src="script.js"></script>
-    <title>Document</title>
+    <title>SAEB MG</title>
 </head>
 <body>
+    <div style="display: flex; justify-content: center; align-items: center; margin: 30px;">
+    <div id="title">
+    <h1><strong>SAEB Minas Gerais(2005-2021)</strong></h1>
+    </div>
+    </div>
+
+    <div style="padding: 30px;">
+    <h2>Consulte o resultado da sua instituição de ensino preenchendo os campos abaixo:</h2>
+    </div>
+
+<div id="tudo">
+<div id="1">
+
+    <form method="post">
+        <div style="display: flex; align-items: start; justify-content: center; flex-flow: column; gap: 40px; margin: 40px; padding-top: 10px;">
+            <div class="inputs">
+                <label for="nome">Insira o código do município:</label>
+                <input type="number" id="id_municipio" />
+            </div>
+
+            <div class="inputs">
+            <label for="nome">Selecione a instituição de ensino:</label>
+            <select>
+                <option>...</option>
+            </select>
+            </div>
+
+            <div class="inputs">
+                <label for="nome">Selecione o grau de ensino:</label>
+                <select>
+                    <option>...</option>
+                    <option>fundamental iniciais (1-5)</option>
+                    <option>fundamental finais (6-9)</option>
+                    <option>medio todos</option>
+                </select>
+            </div>
+
+            <div class="inputs">
+                <label for="nome">Selecione o ano de aplicação da prova:</label>
+                <select>
+                    <option>...</option>
+                </select>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center;"> 
+            <button>Consultar</button>
+        </div>
+    </form>
+
+
+</div>
+
+
+<div id="dois">
+    <div id="campo">
+        <div style="display: flex; position: relative; align-items: center; justify-content: center;"> <h3>Resultados:</h3></div>
+
+
+        <div class="outputs">
+        <p>Nome do município:</p>
+        <p>Nome do município</p>
+    
+        </div>
+
+        <div class="outputs">
+        <p>Nome da instituição:</p>
+        </div>
+
+        <div class="outputs">
+        <p>Taxa de aprovação:</p>
+        </div>
+
+        <div class="outputs">
+            <p>Indicador de rendimento:</p>
+        </div>
+
+        <div class="outputs">
+            <p>Nota em matemática:</p>
+        </div class="outputs">
+
+        <div class="outputs">
+            <p>Nota em português</p>
+        </div>
+
+        <div class="outputs">
+            <p>Média padronizada:</p>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<div style="display: flex; position: relative; flex-flow: row; gap: 10px; padding: 20px;">
+    <p><em><strong>Observação:</strong></em></p>
+    <p>Você pode consultar o código de seu município clicando <a href="https://www.ibge.gov.br/explica/codigos-dos-municipios.php#MG">aqui</a>.</p>
+</div>
     
 </body>
 </html>
