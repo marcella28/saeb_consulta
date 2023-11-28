@@ -31,7 +31,9 @@ label{
 
 select, input{
     height: 40px;
-    width: 400px; 
+    width: 400px;
+    font-size: 25px;
+
 }
 
 form{
@@ -39,15 +41,15 @@ form{
     flex-flow: column;
     display: flex;
     position: relative;
-    height: 750px;
+    height: 650px;
     width: 900px;
     background-color: rgb(253, 202, 135); 
     border-radius: 1cm;
 }
 
 button{
-    height: 80px;
-    width: 300px; 
+    height: 60px;
+    width: 200px; 
     font-size: 30px;
     background-color: rgb(253, 182, 88);
     border-style: solid;
@@ -56,7 +58,7 @@ button{
 }
 
 option{
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .inputs, .outputs{
@@ -65,14 +67,15 @@ option{
     gap: 15px;
 }
 
-#tudo{
+#tudo {
     margin: 30px;
     display: flex;
     flex-flow: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 500px;
 }
+
+
 
 #dois{
     display: flex;

@@ -19,47 +19,63 @@
     </div>
 
 <div id="tudo">
-<div id="1">
+<div id="um">
 
-    <form method="post">
+    <form action="/pesquisar" method="post">
         <div style="display: flex; align-items: start; justify-content: center; flex-flow: column; gap: 40px; margin: 40px; padding-top: 10px;">
             <div class="inputs">
-                <label for="nome">Insira o código do município:</label>
-                <input type="number" id="id_municipio" />
+                <label for="nome">Insira o código da instituição de ensino:</label>
+                <input
+        type="number"
+        id="idEscola"
+        name="idEscola"
+        pattern="[0-9]+"
+        required
+      />
             </div>
-
-            <div class="inputs">
-            <label for="nome">Selecione a instituição de ensino:</label>
-            <select>
-                <option>...</option>
-            </select>
-            </div>
-
             <div class="inputs">
                 <label for="nome">Selecione o grau de ensino:</label>
                 <select>
-                    <option>...</option>
-                    <option>fundamental iniciais (1-5)</option>
-                    <option>fundamental finais (6-9)</option>
-                    <option>medio todos</option>
+                    <option value="Selecione"></option>
+                    <option value="fundamental">Fundamental</option>
+                    <option value="medio">Médio</option>
+                </select>
+            </div>
+            
+
+            <div class="inputs">
+                <label for="nome">Selecione a escolaridade:</label>
+                <select>
+                    <option value="Selecione"></option>
+                    <option value="iniciais (1-5)">Inicial (1-5)</option>
+                    <option value="finais (6-9)">Final (6-9)</option>
+                    <option value="todos (1-4)">Todos (1-4)</option>
                 </select>
             </div>
 
             <div class="inputs">
                 <label for="nome">Selecione o ano de aplicação da prova:</label>
                 <select>
-                    <option>...</option>
+                    <option value="Selecione"></option>
+                    <option value="2005">2005</option>
+                    <option value="2007">2007</option>
+                    <option value="2009">2009</option>
+                    <option value="2011">2011</option>
+                    <option value="2013">2013</option>
+                    <option value="2015">2015</option>
+                    <option value="2017">2017</option>
+                    <option value="2019">2019</option>
+                    <option value="2021">2021</option>
                 </select>
             </div>
           </div>
 
           <div style="display: flex; justify-content: center;"> 
-            <button>Consultar</button>
+            <button type="submit">Consultar</button>
         </div>
+    </div>
     </form>
 
-
-</div>
 
 
 <div id="dois">
@@ -67,11 +83,6 @@
         <div style="display: flex; position: relative; align-items: center; justify-content: center;"> <h3>Resultados:</h3></div>
 
 
-        <div class="outputs">
-        <p>Nome do município:</p>
-        <p>Nome do município</p>
-    
-        </div>
 
         <div class="outputs">
         <p>Nome da instituição:</p>
@@ -96,14 +107,18 @@
         <div class="outputs">
             <p>Média padronizada:</p>
         </div>
+        </div>
     </div>
 </div>
-
 </div>
+
+
+
+
 
 <div style="display: flex; position: relative; flex-flow: row; gap: 10px; padding: 20px;">
     <p><em><strong>Observação:</strong></em></p>
-    <p>Você pode consultar o código de seu município clicando <a href="https://www.ibge.gov.br/explica/codigos-dos-municipios.php#MG">aqui</a>.</p>
+    <p>Você pode consultar o código de sua instituição clicando <a href="https://inepdata.inep.gov.br/analytics/saw.dll?Dashboard&PortalPath=%2Fshared%2FCenso%20da%20Educa%C3%A7%C3%A3o%20B%C3%A1sica%2F_portal%2FCat%C3%A1logo%20de%20Escolas&Page=Lista%20das%20Escolas&P1=dashboard&Action=Navigate&ViewState=6ii2lpsgq5o2c0pslhei6b90fa&P16=NavRuleDefault&NavFromViewID=d%3Adashboard~p%3Asf156n9k0qs70741">aqui</a>.</p>
 </div>
     
 </body>
