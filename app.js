@@ -1,65 +1,82 @@
-const express = require("express");
-const db = require("./conexao");
+const express = require('express');
+const bodyParser = require('body-parser');
+const mysql = require('mysql');
+
 const app = express();
-const path = require("path");
-const router = express.Router();
- 
-router.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname + "/index.html"));
+const port = 3000;
+
+// Configuração do banco de dados
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'acesso123',
+  database: 'saeb',
 });
- 
-// Adicione um middleware para processar dados de formulário
-app.use(express.urlencoded({ extended: true }));
- 
-app.use("/", router);
- 
-const ipAddress = "172.16.31.38"; //Endereço IP da máquina
-const port = 3003;
- 
-app.listen(port, ipAddress, () => {
-  console.log(`Servidor rodando em http://${ipAddress}:${port}`);
+
+db.connect((err) => {
+  if (err) {
+    console.error('Erro ao conectar ao banco de dados:', err);
+  } else {
+    console.log('Conectado ao banco de dados MySQL');
+  }
 });
- 
-// Rota para lidar com a pesquisa
-app.post("/pesquisar", async (req, res) => {
-  const idEscola = req.body.idEscola;
-  const ano = req.body.ano;
-  const ensino = req.body.ensino;
-  const anosEscolares = req.body.anosEscolares;
- 
-  // Crie uma condição para construir a consulta SQL com base nos campos preenchidos
-  let sql = "SELECT * FROM dados_escolares WHERE id_escola = ?";
-  let params = [idEscola];
- 
-  if (ano !== "Selecione") {
-    sql += " AND ano = ?";
-    params.push(ano);
-  }
- 
-  if (ensino !== "Selecione") {
-    sql += " AND ensino = ?";
-    params.push(ensino);
-  }
- 
-  if (anosEscolares !== "Selecione") {
-    sql += " AND anos_escolares = ?";
-    params.push(anosEscolares);
-  }
- 
-  try {
-    // Consulta ao banco de dados com base nos campos fornecidos
-    const [rows, fields] = await db.execute(sql, params);
- 
-    // Verifica se há resultados
-    if (rows.length > 0) {
-      res.json(rows);
+
+// Configuração do Express
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Rota para processar o formulário
+app.post('/consultar', (req, res) => {
+  const { idEscola, ensino, anosEscolares, ano } = req.body;
+
+  // Consulta para buscar o nome da escola correspondente ao id inserido
+  const sqlNomeEscola = 'SELECT nome FROM ref_escolas WHERE id_escola = ?';
+  db.query(sqlNomeEscola, [idEscola], (err, resultNomeEscola) => {
+    if (err) {
+      console.error('Erro na consulta ao banco de dados (ref_escolas):', err);
+      res.status(500).json({ error: 'Erro interno do servidor' });
     } else {
-      res.json({
-        mensagem: "Nenhum dado encontrado para os critérios fornecidos.",
+      if (resultNomeEscola.length === 0) {
+        res.status(404).json({ error: 'ID da escola não encontrado' });
+        return;
+      }
+
+      const nomeEscola = resultNomeEscola[0].nome;
+
+      // Consulta adicional para buscar outras informações na tabela dados_escolares
+      const sqlDadosEscolares = 'SELECT * FROM dados_escolares WHERE idEscola = ? AND ensino = ? AND anosEscolares = ? AND ano = ?';
+      db.query(sqlDadosEscolares, [idEscola, ensino, anosEscolares, ano], (err, resultDadosEscolares) => {
+        if (err) {
+          console.error('Erro na consulta ao banco de dados (dados_escolares):', err);
+          res.status(500).json({ error: 'Erro interno do servidor' });
+        } else {
+          if (resultDadosEscolares.length === 0) {
+            res.status(404).json({ error: 'Dados escolares não encontrados' });
+            return;
+          }
+
+          // Aqui você pode processar os resultados adicionais
+          const dadosEscolares = resultDadosEscolares[0]; // Assumindo que você está interessado apenas no primeiro resultado
+
+          // Combine os resultados
+          const resultadoFinal = {
+            nome: nomeEscola,
+            taxa_aprovacao: dadosEscolares.taxa_aprovacao,
+            indicador_rendimento: dadosEscolares.indicador_rendimento,
+            nota_saeb_matematica: dadosEscolares.nota_saeb_matematica,
+            nota_saeb_lingua_portuguesa: dadosEscolares.nota_saeb_lingua_portuguesa,
+            nota_saeb_media_padronizada: dadosEscolares.nota_saeb_media_padronizada,
+          };
+
+          // Envie o resultado para o cliente
+          res.json(resultadoFinal);
+        }
       });
     }
-  } catch (err) {
-    console.error("Erro ao acessar o banco de dados:", err);
-    res.status(500).send("Erro interno do servidor");
-  }
+  });
+});
+
+// Inicie o servidor
+app.listen(port, () => {
+  console.log(`Servidor rodando em http://localhost:${port}`);
 });

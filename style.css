@@ -41,7 +41,7 @@ form{
     flex-flow: column;
     display: flex;
     position: relative;
-    height: 650px;
+    height: 700px;
     width: 900px;
     background-color: rgb(253, 202, 135); 
     border-radius: 1cm;
@@ -71,7 +71,7 @@ option{
     margin: 30px;
     display: flex;
     flex-flow: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
 }
 
@@ -82,7 +82,7 @@ option{
     position: relative;
     justify-content: center;
     align-items: start;
-    height: 770px;
+    height: 700px;
     width: 900px;
     background-color: rgb(253, 202, 135); 
     border-radius: 1cm; 
@@ -94,7 +94,7 @@ option{
     flex-flow: column;
     display: flex;
     position: relative;
-    height: 750px;
+    height: 650px;
     width: 800px;
 }
 
