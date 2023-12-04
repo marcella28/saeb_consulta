@@ -19,7 +19,7 @@
 
     <div id="tudo">
         <div id="um">
-            <form method="post" id="consultaForm" action="/gerarTabela">
+            <form id="consultaForm">
                 <div style="display: flex; align-items: start; justify-content: center; flex-flow: column; gap: 40px; margin: 40px; padding-top: 10px;">
                     <div class="inputs">
                         <label for="ensino">Selecione o grau de ensino:</label>
@@ -57,44 +57,86 @@
                 </div>
 
                 <div style="display: flex; justify-content: center;"> 
-                    <button type="submit">Gerar tabela</button>
+                    <button type="button" onclick="gerarTabela()">Gerar tabela</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <div id="tudo">
+        <div id="dois">
+            <div id="campo">
+                <div style="display: flex; position: relative; align-items: center; justify-content: center;">
+                    <h3>Ranking do IDEB (Índice de Desenvolvimento da Educação Básica) referente ao ano escolhido</h3>
+                </div>
+
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Nome da instituição</th>
+                            <th>Nota do Ideb</th>
+                        </tr>
+                    </thead>
+                    <!-- Os dados da tabela serão preenchidos automaticamente pelo JavaScript do cliente -->
+                    <tbody id="resultados"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <script>
-        document.getElementById('consultaForm').addEventListener('submit', async function (event) {
-          event.preventDefault();
+        function gerarTabela() {
+            const formData = new FormData(document.getElementById('consultaForm'));
 
-          const formData = new FormData(this);
+            const ensino = formData.get('ensino');
+            const anosEscolares = formData.get('anosEscolares');
+            const ano = formData.get('ano');
 
-          try {
-            const response = await fetch('/gerarTabela', {
-  method: 'POST',
-  body: new URLSearchParams(formData),
-});
-
-            if (response.ok) {
-              const data = await response.json();
-              updateTable(data);
-            } else {
-              console.error('Erro na solicitação:', response.statusText);
+            if (!ensino || !anosEscolares || !ano) {
+                console.error('Parâmetros inválidos');
+                return;
             }
-          } catch (error) {
-            console.error('Erro na solicitação:', error.message);
-          }
-        });
+
+            // Leitura dos dados diretamente dos arquivos JSON
+            fetch('dadosIdeb.json')
+                .then(response => response.json())
+                .then(dataIdeb => {
+                    const filteredDataIdeb = dataIdeb.filter(item => (
+                        item.ensino === ensino &&
+                        item.anos_escolares === anosEscolares &&
+                        item.ano === ano
+                    ));
+
+                    // Leitura dos dados diretamente do arquivo JSON
+                    fetch('dadosEscolas.json')
+                        .then(response => response.json())
+                        .then(dataEscolas => {
+                            const idToNome = dataEscolas.reduce((acc, item) => {
+                                acc[item.id_escola] = item.nome;
+                                return acc;
+                            }, {});
+
+                            const dataFinal = filteredDataIdeb.map(item => ({
+                                ...item,
+                                nome_instituicao: idToNome[item.id_escola]
+                            }));
+
+                            updateTable(dataFinal);
+                        })
+                        .catch(error => console.error('Erro ao ler dados de escolas:', error));
+                })
+                .catch(error => console.error('Erro ao ler dados do IDEB:', error));
+        }
 
         function updateTable(data) {
-          const resultadosBody = document.getElementById('resultados');
-          resultadosBody.innerHTML = ''; // Limpa a tabela antes de adicionar novos dados
+            const resultadosBody = document.getElementById('resultados');
+            resultadosBody.innerHTML = '';
 
-          data.forEach((row) => {
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `<td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
-            resultadosBody.appendChild(newRow);
-          });
+            data.forEach((row) => {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `<td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
+                resultadosBody.appendChild(newRow);
+            });
         }
     </script>
 </body>
