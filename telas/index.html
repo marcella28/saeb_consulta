@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <title>SAEB MG</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; margin: 30px;">
+        <div id="title">
+            <h1><strong>SAEB Minas Gerais(Divinópolis)</strong></h1>
+        </div>
+    </div>
+
+    <div style="padding: 30px;">
+        <h2>Consulte o resultado da sua instituição de ensino preenchendo os campos abaixo:</h2>
+    </div>
+
+    <div id="tudo">
+        <div id="um">
+            <form method="post" id="consultaForm" action="/gerarTabela">
+                <div style="display: flex; align-items: start; justify-content: center; flex-flow: column; gap: 40px; margin: 40px; padding-top: 10px;">
+                    <div class="inputs">
+                        <label for="nome">Selecione o grau de ensino:</label>
+                        <select name="ensino" method="post">
+                            <option value="Selecione"></option>
+                            <option value="fundamental">Fundamental</option>
+                            <option value="medio">Médio</option>
+                        </select>
+                    </div>
+                    <div class="inputs" method="post">
+                        <label for="nome">Selecione a escolaridade:</label>
+                        <select name="anosEscolares">
+                            <option value="Selecione"></option>
+                            <option value="iniciais (1-5)">Inicial (1-5)</option>
+                            <option value="finais (6-9)">Final (6-9)</option>
+                            <option value="todos (1-4)">Ens. Médio (1-4)</option>
+                        </select>
+                    </div>
+                    <div class="inputs">
+                        <label for="nome">Selecione o ano de aplicação da prova:</label>
+                        <select method="post" name="ano">
+                            <option value="Selecione"></option>
+                            <option value="2007">2007</option>
+                            <option value="2009">2009</option>
+                            <option value="2011">2011</option>
+                            <option value="2013">2013</option>
+                            <option value="2015">2015</option>
+                            <option value="2017">2017</option>
+                            <option value="2019">2019</option>
+                            <option value="2021">2021</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center;"> 
+                    <button type="submit">Gerar tabela</button>
+                </div>
+            </form>
+        </div>
+        <script>
+            document.getElementById('consultaForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const formData = new FormData(this);
+                try {
+                    const response = await fetch('/gerarTabela', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateTable(data);
+                    } else {
+                        console.error('Erro na solicitação:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Erro na solicitação:', error.message);
+                }
+            });
+        
+            function updateTable(data) {
+                const resultadosRow = document.getElementById('resultados');
+                resultadosRow.innerHTML = ''; // Limpa os resultados anteriores
+                data.forEach((row) => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `<td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
+                    resultadosRow.parentNode.insertBefore(newRow, resultadosRow.nextSibling);
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>
