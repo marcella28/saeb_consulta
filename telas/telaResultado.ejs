@@ -5,26 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css" />
     <title>Resultado SAEB MG</title>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-           // Recupera os dados armazenados na sessionStorage
-           const data = JSON.parse(sessionStorage.getItem('resultadoData') || '[]');
-     
-           // Preenche a tabela com os dados
-           const resultadosBody = document.getElementById('resultados');
-     
-           data.forEach((row) => {
-              const newRow = document.createElement('tr');
-              newRow.innerHTML = `<td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
-              resultadosBody.appendChild(newRow);
-           });
-     
-           // Limpa os dados da sessionStorage após utilizar
-           sessionStorage.removeItem('resultadoData');
-        });
-     </script>
-     
 </head>
 <body>
     <div style="display: flex; justify-content: center; align-items: center; margin: 30px;">
@@ -51,13 +31,10 @@
                     </tr>
 
                     <!-- Os dados da tabela serão preenchidos automaticamente pelo JavaScript do cliente -->
-                    <tbody id="resultados">
-                    </tbody>
+                    <tbody id="resultados"></tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <script src="resultado.js"></script>
 </body>
 </html>
