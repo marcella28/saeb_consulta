@@ -9,12 +9,13 @@
 <body>
     <div style="display: flex; justify-content: center; align-items: center; margin: 30px;">
         <div id="title">
-            <h1><strong>SAEB Minas Gerais (Divinópolis)</strong></h1>
+            <h1><strong>SAEB MG - IDEB Divinópolis</strong></h1>
         </div>
     </div>
 
     <div style="padding: 30px;">
-        <h2>Consulte o resultado da sua instituição de ensino preenchendo os campos abaixo:</h2>
+        <h2>Consulte a classificação da sua instituição de ensino no IDEB (Índice de Desenvolvimento da Educação Básica)  preenchendo os campos abaixo e clicando no botão:</h2>
+        
     </div>
 
     <div id="tudo">
@@ -60,19 +61,23 @@
                     <button type="button" onclick="gerarTabela()">Gerar tabela</button>
                 </div>
             </form>
-        </div>
-    </div>
 
-    <div id="tudo">
+            <div id="mensagemAviso" style="color: red; margin-top: 10px;"></div>
+        </div>
+  
+<div>
         <div id="dois">
+            <div style=" margin: 30px; justify-content: center; align-items: center;">
+            <div style="display: flex; position: relative; align-items: center; justify-content: center;">
+                <h3>Ranking do IDEB referente ao ano escolhido:</h3>
+            </div>
             <div id="campo">
-                <div style="display: flex; position: relative; align-items: center; justify-content: center;">
-                    <h3>Ranking do IDEB (Índice de Desenvolvimento da Educação Básica) referente ao ano escolhido</h3>
-                </div>
+                
 
                 <table border="1">
                     <thead>
                         <tr>
+                            <th>Classificação</th>
                             <th>Nome da instituição</th>
                             <th>Nota do Ideb</th>
                         </tr>
@@ -82,62 +87,92 @@
                 </table>
             </div>
         </div>
+        </div>
     </div>
+    
 
-    <script>
-        function gerarTabela() {
-            const formData = new FormData(document.getElementById('consultaForm'));
+</body>
+<script>
+    function gerarTabela() {
+        const formData = new FormData(document.getElementById('consultaForm'));
 
-            const ensino = formData.get('ensino');
-            const anosEscolares = formData.get('anosEscolares');
-            const ano = formData.get('ano');
+        const ensino = formData.get('ensino');
+        const anosEscolares = formData.get('anosEscolares');
+        const ano = formData.get('ano');
 
-            if (!ensino || !anosEscolares || !ano) {
-                console.error('Parâmetros inválidos');
-                return;
-            }
-
-            // Leitura dos dados diretamente dos arquivos JSON
-            fetch('dadosIdeb.json')
-                .then(response => response.json())
-                .then(dataIdeb => {
-                    const filteredDataIdeb = dataIdeb.filter(item => (
-                        item.ensino === ensino &&
-                        item.anos_escolares === anosEscolares &&
-                        item.ano === ano
-                    ));
-
-                    // Leitura dos dados diretamente do arquivo JSON
-                    fetch('dadosEscolas.json')
-                        .then(response => response.json())
-                        .then(dataEscolas => {
-                            const idToNome = dataEscolas.reduce((acc, item) => {
-                                acc[item.id_escola] = item.nome;
-                                return acc;
-                            }, {});
-
-                            const dataFinal = filteredDataIdeb.map(item => ({
-                                ...item,
-                                nome_instituicao: idToNome[item.id_escola]
-                            }));
-
-                            updateTable(dataFinal);
-                        })
-                        .catch(error => console.error('Erro ao ler dados de escolas:', error));
-                })
-                .catch(error => console.error('Erro ao ler dados do IDEB:', error));
+        if (!ensino || !anosEscolares || !ano) {
+            exibirAviso('Por favor, preencha todos os campos.');
+            return;
         }
 
-        function updateTable(data) {
-            const resultadosBody = document.getElementById('resultados');
-            resultadosBody.innerHTML = '';
+        // Limpar a mensagem de aviso
+        exibirAviso('');
 
-            data.forEach((row) => {
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `<td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
-                resultadosBody.appendChild(newRow);
-            });
-        }
-    </script>
+        // Leitura dos dados diretamente dos arquivos JSON
+        fetch('dadosIdeb.json')
+            .then(response => response.json())
+            .then(dataIdeb => {
+                const filteredDataIdeb = dataIdeb.filter(item => (
+                    item.ensino === ensino &&
+                    item.anos_escolares === anosEscolares &&
+                    item.ano === ano
+                ));
+
+                if (filteredDataIdeb.length === 0) {
+                    exibirAviso('Nenhum dado encontrado para os parâmetros informados.');
+                    return;
+                }
+
+                // Leitura dos dados diretamente do arquivo JSON
+                fetch('dadosEscolas.json')
+                    .then(response => response.json())
+                    .then(dataEscolas => {
+                        const idToNome = dataEscolas.reduce((acc, item) => {
+                            acc[item.id_escola] = item.nome;
+                            return acc;
+                        }, {});
+
+                        // Ordenar os dados pelo IDEB em ordem decrescente
+                        const sortedDataIdeb = filteredDataIdeb.sort((a, b) => b.ideb - a.ideb);
+
+                        // Adicionar a classificação aos dados e remover linhas com valores nulos ou indefinidos
+                        const dataFinal = sortedDataIdeb.map((item, index) => ({
+                            ...item,
+                            nome_instituicao: idToNome[item.id_escola],
+                            classificacao: index + 1
+                        })).filter(item => item.classificacao && item.nome_instituicao && item.ideb);
+
+                        updateTable(dataFinal);
+                    })
+                    .catch(error => console.error('Erro ao ler dados de escolas:', error));
+            })
+            .catch(error => console.error('Erro ao ler dados do IDEB:', error));
+    }
+
+    function exibirAviso(mensagem) {
+        const divAviso = document.getElementById('mensagemAviso');
+        divAviso.textContent = mensagem;
+    }
+
+    function updateTable(data) {
+        const resultadosBody = document.getElementById('resultados');
+        resultadosBody.innerHTML = '';
+
+        data.forEach((row) => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `<td>${getOrdinal(row.classificacao)}</td><td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
+            resultadosBody.appendChild(newRow);
+        });
+    }
+
+    // Função para converter números em ordinais (1º, 2º, 3º, ...)
+    function getOrdinal(n) {
+        const s = ["º", "º", "º", "º", "º", "º", "º", "º", "º", "º"];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
+</script>
+
+
 </body>
 </html>

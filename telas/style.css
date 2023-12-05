@@ -1,3 +1,6 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+}
 body{
     background-color:antiquewhite
 }
@@ -74,31 +77,52 @@ option{
     flex-flow: row;
     justify-content: space-around;
     align-items: center;
-}
+    height: auto;
 
+ 
+
+}
 
 
 #dois{
     display: flex;
     position: relative;
+    flex-flow: column;
     justify-content: center;
-    align-items: start;
+    align-items: center;
     height: auto;
     width: 900px;
     background-color: rgb(253, 202, 135); 
     border-radius: 1cm; 
+
 }
 
 #campo{
     justify-content: center;
-    align-items: start;
+    align-items:center;
     flex-flow: column;
     display: flex;
     position: relative;
-    height: 650px;
+    height: auto;
     width: 800px;
 }
 
 p{
     font-size: 30px;
 }
+
+table{
+    width: 100%;
+    font-size: 22px;
+    background-color: antiquewhite;
+    margin: 0 auto;
+    text-align: center;
+    gap: 50px;
+    border-collapse: collapse; /* Combina as bordas das células para evitar espaços extras */
+}
+
+th, td {
+    padding: 12px; /* Adiciona espaçamento interno nas células (ajuste conforme necessário) */
+}
+
+
