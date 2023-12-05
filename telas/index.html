@@ -95,19 +95,16 @@
 <script>
     function gerarTabela() {
         const formData = new FormData(document.getElementById('consultaForm'));
-
+    
         const ensino = formData.get('ensino');
         const anosEscolares = formData.get('anosEscolares');
         const ano = formData.get('ano');
-
+    
         if (!ensino || !anosEscolares || !ano) {
             exibirAviso('Por favor, preencha todos os campos.');
             return;
         }
-
-        // Limpar a mensagem de aviso
-        exibirAviso('');
-
+    
         // Leitura dos dados diretamente dos arquivos JSON
         fetch('dadosIdeb.json')
             .then(response => response.json())
@@ -115,64 +112,69 @@
                 const filteredDataIdeb = dataIdeb.filter(item => (
                     item.ensino === ensino &&
                     item.anos_escolares === anosEscolares &&
-                    item.ano === ano
+                    item.ano === ano &&
+                    item.ideb !== null
                 ));
-
+    
                 if (filteredDataIdeb.length === 0) {
                     exibirAviso('Nenhum dado encontrado para os parâmetros informados.');
                     return;
                 }
-
+    
                 // Leitura dos dados diretamente do arquivo JSON
                 fetch('dadosEscolas.json')
-                    .then(response => response.json())
+                .then(response => response.json())
                     .then(dataEscolas => {
                         const idToNome = dataEscolas.reduce((acc, item) => {
                             acc[item.id_escola] = item.nome;
                             return acc;
                         }, {});
-
-                        // Ordenar os dados pelo IDEB em ordem decrescente
-                        const sortedDataIdeb = filteredDataIdeb.sort((a, b) => b.ideb - a.ideb);
-
-                        // Adicionar a classificação aos dados e remover linhas com valores nulos ou indefinidos
-                        const dataFinal = sortedDataIdeb.map((item, index) => ({
+    
+                        const dataFinal = filteredDataIdeb.map(item => ({
                             ...item,
-                            nome_instituicao: idToNome[item.id_escola],
-                            classificacao: index + 1
-                        })).filter(item => item.classificacao && item.nome_instituicao && item.ideb);
-
+                            nome_instituicao: idToNome[item.id_escola]
+                        })).filter(item => item.ideb !== null);
+    
                         updateTable(dataFinal);
+                        document.getElementById('dois').style.display = 'block'; // Torna a div visível
                     })
                     .catch(error => console.error('Erro ao ler dados de escolas:', error));
             })
             .catch(error => console.error('Erro ao ler dados do IDEB:', error));
+    
     }
-
+    
     function exibirAviso(mensagem) {
         const divAviso = document.getElementById('mensagemAviso');
         divAviso.textContent = mensagem;
     }
-
     function updateTable(data) {
-        const resultadosBody = document.getElementById('resultados');
-        resultadosBody.innerHTML = '';
-
-        data.forEach((row) => {
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `<td>${getOrdinal(row.classificacao)}</td><td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
-            resultadosBody.appendChild(newRow);
-        });
+                const resultadosBody = document.getElementById('resultados');
+                resultadosBody.innerHTML = '';
+    
+                data.forEach((row, index) => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `<td>${ordinalSuffix(index + 1)}</td><td>${row.nome_instituicao}</td><td>${row.ideb}</td>`;
+                    resultadosBody.appendChild(newRow);
+                });
+            }
+    
+    function ordinalSuffix(i) {
+        const j = i % 10,
+            k = i % 100;
+        if (j == 1 && k != 11) {
+            return i + "º";
+        }
+        if (j == 2 && k != 12) {
+            return i + "º";
+        }
+        if (j == 3 && k != 13) {
+            return i + "º";
+        }
+        return i + "º";
     }
-
-    // Função para converter números em ordinais (1º, 2º, 3º, ...)
-    function getOrdinal(n) {
-        const s = ["º", "º", "º", "º", "º", "º", "º", "º", "º", "º"];
-        const v = n % 100;
-        return n + (s[(v - 20) % 10] || s[v] || s[0]);
-    }
-</script>
-
+    
+    </script>
 
 </body>
 </html>
